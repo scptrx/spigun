@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -59,13 +60,15 @@ fun HomeScreen(
             Button(
                 onClick = onStartNewGame,
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.5f)
                     .height(64.dp)
             ) {
                 Text(
                     text = "new game",
+                    modifier = Modifier.fillMaxWidth(),
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start
                 )
             }
 
@@ -74,13 +77,15 @@ fun HomeScreen(
             Button(
                 onClick = onManageGroups,
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.5f)
                     .height(64.dp)
             ) {
                 Text(
                     text = "my player groups",
+                    modifier = Modifier.fillMaxWidth(),
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start
                 )
             }
 
@@ -89,13 +94,15 @@ fun HomeScreen(
             Button(
                 onClick = onBrowseTopics,
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.5f)
                     .height(64.dp)
             ) {
                 Text(
                     text = "topics",
+                    modifier = Modifier.fillMaxWidth(),
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start
                 )
             }
         }
