@@ -38,4 +38,75 @@
     <string name="dialog_cannot_delete_player_title">cannot delete player</string>
     <string name="dialog_cannot_delete_player_text">this player is part of groups that have only 3 players:</string>
     <string name="dialog_cannot_delete_player_footer">to delete this player, you must first delete these groups or add more players to them.</string>
+
+    <string name="topics_title">topic packs</string>
+    <string name="topics_add_pack">add pack</string>
+    <string name="topics_search_placeholder">search topics…</string>
+    <string name="topics_custom_packs">custom packs</string>
+    <string name="topics_default_packs">default packs</string>
+    <string name="topics_header_title">manage topics</string>
+    <string name="topics_header_description">view available topic packs or add your own custom words.</string>
+    <string name="topics_word_count">%1$d words</string>
+    
+    <string name="dialog_add_pack_title">add new topic pack</string>
+    <string name="dialog_edit_pack_title">edit topic pack</string>
+    <string name="dialog_pack_name_label">pack name</string>
+    <string name="dialog_pack_words_label">words (comma separated)</string>
+    <string name="dialog_delete_pack_title">delete pack</string>
+    <string name="dialog_delete_pack_text">are you sure you want to delete the pack \"%1$s\"?</string>
+    <string name="dialog_pack_min_words_error">pack must have at least 5 words.</string>
+
+    <string name="setup_title">game setup</string>
+    <string name="setup_header_title">configure round</string>
+    <string name="setup_header_description">choose your squad and rules for the next game.</string>
+    <string name="setup_group_label">select player group</string>
+    <string name="setup_duration_label">round duration (min)</string>
+    <string name="setup_spies_label">number of spies</string>
+    <string name="setup_modifiers_label">game modifiers</string>
+    <string name="setup_spy_knows_category">spy knows category</string>
+    <string name="setup_surprise_game">surprise game (10% chance)</string>
+    <string name="setup_start_game">start game</string>
+    <string name="setup_topics_label">select topic packs</string>
+    <string name="setup_min_topics_error">select at least 1 topic pack.</string>
+    <string name="setup_no_groups_error">no groups found. create one in player management first.</string>
+    <string name="setup_create_group_button">create player group</string>
+
+    <string name="game_pass_to_player">pass to each player</string>
+    <string name="game_tap_to_reveal">tap to reveal role</string>
+    <string name="game_dont_show_others">don\'t show others</string>
+    <string name="game_player_progress">player %1$d of %2$d</string>
+    <string name="game_next_player">next player</string>
+    <string name="game_start_discussion">done — start discussion</string>
+    <string name="game_role_spy">you are a spy!</string>
+    <string name="game_role_player">you are a player</string>
+    <string name="game_topic_label">topic: %1$s</string>
+    <string name="game_category_label">category: %1$s</string>
+    <string name="game_spy_knows_nothing">you don\'t know the topic…</string>
+
+    <!-- Game Play - Timer -->
+    <string name="timer_title">discussion</string>
+    <string name="timer_header_title">find the spy</string>
+    <string name="timer_header_description">discuss the topic and try to figure out who has no idea what you are talking about.</string>
+    <string name="timer_pause">pause</string>
+    <string name="timer_resume">resume</string>
+    <string name="timer_end_now">end round early</string>
+    <string name="timer_time_up">time is up!</string>
+    <string name="timer_finish_voting">go to voting</string>
+
+    <!-- Game Play - Results -->
+    <string name="results_title">voting results</string>
+    <string name="results_header_title">who is the spy?</string>
+    <string name="results_header_description">select the player the group voted for to see if you were right.</string>
+    <string name="results_reveal_button">reveal secret info</string>
+    <string name="results_topic_was">the topic was:</string>
+    <string name="results_spies_were">the spies were:</string>
+    <string name="results_victory_players">players won!</string>
+    <string name="results_victory_spies">spies won!</string>
+    <string name="results_surprise_everyone_spy">surprise! everyone was a spy!</string>
+    <string name="results_surprise_no_spy">surprise! no one was a spy!</string>
+    <string name="results_play_again">play again</string>
+    <string name="results_back_home">back to menu</string>
+
+    <string name="info_surprise_title">surprise game</string>
+    <string name="info_surprise_text">if enabled, there is a 10% chance that the game logic changes:\n\n• everyone is a spy.\nor\n• no one is a spy.\n</string>
 </resources>

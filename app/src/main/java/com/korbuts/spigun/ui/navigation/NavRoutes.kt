@@ -23,4 +23,7 @@ sealed interface Screen {
 
     @Serializable
     data object Results : Screen
+
+    @Serializable
+    data object GameGraph : Screen
 }

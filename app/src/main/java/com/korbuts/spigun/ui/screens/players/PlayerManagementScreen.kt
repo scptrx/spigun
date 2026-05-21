@@ -3,7 +3,6 @@ package com.korbuts.spigun.ui.screens.players
 import android.os.Parcelable
 import android.view.HapticFeedbackConstants
 import android.view.View
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,12 +31,12 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,11 +62,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.korbuts.spigun.R
 import com.korbuts.spigun.data.model.Player
 import com.korbuts.spigun.data.model.PlayerGroup
+import com.korbuts.spigun.ui.common.SpigunCard
+import com.korbuts.spigun.ui.common.SpigunHeader
+import com.korbuts.spigun.ui.common.SpigunSectionHeader
+import com.korbuts.spigun.ui.common.vibrate
 import kotlinx.parcelize.Parcelize
-
-private fun View.vibrate() {
-    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-}
 
 sealed class PlayerDialog : Parcelable {
     @Parcelize object AddPlayer : PlayerDialog()
@@ -134,7 +134,10 @@ fun PlayerManagementScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            HeaderSection()
+            SpigunHeader(
+                title = stringResource(R.string.players_header_title),
+                description = stringResource(R.string.players_header_description)
+            )
 
             OutlinedTextField(
                 value = uiState.searchQuery,
@@ -153,10 +156,14 @@ fun PlayerManagementScreen(
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 if (uiState.groups.isNotEmpty()) {
-                    item {
-                        SectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
+                    item(key = "groups_header") {
+                        SpigunSectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
                     }
-                    items(uiState.groups) { group ->
+                    items(
+                        items = uiState.groups,
+                        key = { "group_${it.id}" },
+                        contentType = { "group" }
+                    ) { group ->
                         GroupItem(
                             group = group,
                             onEdit = { activeDialog = PlayerDialog.EditGroup(it) },
@@ -165,11 +172,15 @@ fun PlayerManagementScreen(
                     }
                 }
 
-                item {
-                    SectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
+                item(key = "players_header") {
+                    SpigunSectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
                 }
 
-                items(uiState.players) { player ->
+                items(
+                    items = uiState.players,
+                    key = { "player_${it.id}" },
+                    contentType = { "player" }
+                ) { player ->
                     PlayerItem(
                         player = player,
                         isSelected = uiState.selectedPlayerIds.contains(player.id),
@@ -261,42 +272,7 @@ fun PlayerManagementScreen(
 }
 
 @Composable
-fun HeaderSection() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = stringResource(R.string.players_header_title),
-            style = SpigunTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = stringResource(R.string.players_header_description),
-            color = SpigunTheme.colors.gray,
-            fontWeight = FontWeight.Bold,
-            style = SpigunTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(
-            text = title,
-            style = SpigunTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun PlayerItem(
+private fun PlayerItem(
     player: Player,
     isSelected: Boolean,
     onToggle: () -> Unit,
@@ -304,17 +280,8 @@ fun PlayerItem(
     onDelete: (Player) -> Unit
 ) {
     val view = LocalView.current
-    val shape = RoundedCornerShape(16.dp)
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clip(shape)
-            .clickable { 
-                view.vibrate()
-                onToggle() 
-            },
-        shape = shape,
+    SpigunCard(
+        onClick = onToggle,
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) SpigunTheme.colors.primaryContainer else SpigunTheme.colors.surfaceVariant
         )
@@ -328,7 +295,7 @@ fun PlayerItem(
             Icon(
                 imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                 contentDescription = null,
-                tint = if (isSelected) SpigunTheme.colors.primary else SpigunTheme.colors.gray
+                tint = if (isSelected) SpigunTheme.colors.primary else Color.Gray
             )
             Spacer(modifier = Modifier.size(12.dp))
             Text(
@@ -353,21 +320,14 @@ fun PlayerItem(
 }
 
 @Composable
-fun GroupItem(
+private fun GroupItem(
     group: PlayerGroup,
     onEdit: (PlayerGroup) -> Unit,
     onDelete: (PlayerGroup) -> Unit
 ) {
     val view = LocalView.current
-    val shape = RoundedCornerShape(16.dp)
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = SpigunTheme.colors.secondaryContainer
-        )
+    SpigunCard(
+        colors = CardDefaults.cardColors(containerColor = SpigunTheme.colors.secondaryContainer)
     ) {
         Row(
             modifier = Modifier
@@ -405,7 +365,7 @@ fun GroupItem(
 }
 
 @Composable
-fun AddPlayerDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+private fun AddPlayerDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     val view = LocalView.current
     var name by rememberSaveable { mutableStateOf("") }
     AlertDialog(
@@ -442,7 +402,7 @@ fun AddPlayerDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
 }
 
 @Composable
-fun EditPlayerDialog(player: Player, onDismiss: () -> Unit, onConfirm: (Player) -> Unit) {
+private fun EditPlayerDialog(player: Player, onDismiss: () -> Unit, onConfirm: (Player) -> Unit) {
     val view = LocalView.current
     var name by rememberSaveable { mutableStateOf(player.name) }
     AlertDialog(
@@ -479,7 +439,7 @@ fun EditPlayerDialog(player: Player, onDismiss: () -> Unit, onConfirm: (Player) 
 }
 
 @Composable
-fun EditGroupDialog(group: PlayerGroup, onDismiss: () -> Unit, onConfirm: (PlayerGroup) -> Unit) {
+private fun EditGroupDialog(group: PlayerGroup, onDismiss: () -> Unit, onConfirm: (PlayerGroup) -> Unit) {
     val view = LocalView.current
     var name by rememberSaveable { mutableStateOf(group.name) }
     var players by rememberSaveable { mutableStateOf(group.players) }
@@ -501,7 +461,10 @@ fun EditGroupDialog(group: PlayerGroup, onDismiss: () -> Unit, onConfirm: (Playe
                 Text(stringResource(R.string.dialog_players_in_group_label), style = SpigunTheme.typography.labelLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
-                    items(players) { player ->
+                    items(
+                        items = players,
+                        key = { it.id }
+                    ) { player ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -553,7 +516,7 @@ fun EditGroupDialog(group: PlayerGroup, onDismiss: () -> Unit, onConfirm: (Playe
 }
 
 @Composable
-fun CreateGroupDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+private fun CreateGroupDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     val view = LocalView.current
     var name by rememberSaveable { mutableStateOf("") }
     AlertDialog(
@@ -592,7 +555,7 @@ fun CreateGroupDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
 }
 
 @Composable
-fun DeleteConfirmationDialog(
+private fun DeleteConfirmationDialog(
     title: String,
     text: String,
     onDismiss: () -> Unit,
@@ -626,7 +589,7 @@ fun DeleteConfirmationDialog(
 }
 
 @Composable
-fun DeletePlayerWarningDialog(
+private fun DeletePlayerWarningDialog(
     groups: List<PlayerGroup>,
     onDismiss: () -> Unit
 ) {

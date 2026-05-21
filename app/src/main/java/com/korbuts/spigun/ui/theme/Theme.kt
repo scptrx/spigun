@@ -28,7 +28,8 @@ data class SpigunColors(
     val onSecondaryContainer: Color,
     val primaryContainer: Color,
     val error: Color,
-    val gray: Color = Color.Gray
+    val gray: Color = Color.Gray,
+    val success: Color
 )
 
 val LocalSpigunColors = staticCompositionLocalOf {
@@ -44,7 +45,8 @@ val LocalSpigunColors = staticCompositionLocalOf {
         secondaryContainer = Color(0xFF333333),
         onSecondaryContainer = Color.White,
         primaryContainer = Color(0xFF444444),
-        error = Color(0xFFCF6679)
+        error = Color(0xFF703D49),
+        success = Color(0xFF62B04F)
     )
 }
 
@@ -112,7 +114,8 @@ fun SpigunTheme(
             secondaryContainer = Color(0xFF333333),
             onSecondaryContainer = Color.White,
             primaryContainer = Color(0xFF444444),
-            error = Color(0xFFCF6679)
+            error = Color(0xFFCF6679),
+            success = Color(0xFF62B04F)
         )
     } else {
         SpigunColors(
@@ -127,7 +130,8 @@ fun SpigunTheme(
             secondaryContainer = Color(0xFF333333),
             onSecondaryContainer = Color.White,
             primaryContainer = Color(0xFF444444),
-            error = Color(0xFFCF6679)
+            error = Color(0xFFCF6679),
+            success = Color(0xFF62B04F)
         )
     }
 

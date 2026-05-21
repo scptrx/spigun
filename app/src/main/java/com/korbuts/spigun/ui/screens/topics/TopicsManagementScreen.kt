@@ -3,7 +3,6 @@ package com.korbuts.spigun.ui.screens.topics
 import android.os.Parcelable
 import android.view.HapticFeedbackConstants
 import android.view.View
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +27,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -48,7 +46,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -57,12 +54,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.korbuts.spigun.R
 import com.korbuts.spigun.data.model.TopicsPack
+import com.korbuts.spigun.ui.common.SpigunCard
+import com.korbuts.spigun.ui.common.SpigunHeader
+import com.korbuts.spigun.ui.common.SpigunSectionHeader
+import com.korbuts.spigun.ui.common.vibrate
 import com.korbuts.spigun.ui.theme.SpigunTheme
 import kotlinx.parcelize.Parcelize
-
-private fun View.vibrate() {
-    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-}
 
 sealed class TopicDialog : Parcelable {
     @Parcelize object AddPack : TopicDialog()
@@ -113,7 +110,10 @@ fun TopicsManagementScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            HeaderSection()
+            SpigunHeader(
+                title = stringResource(R.string.topics_header_title),
+                description = stringResource(R.string.topics_header_description)
+            )
 
             OutlinedTextField(
                 value = uiState.searchQuery,
@@ -133,7 +133,7 @@ fun TopicsManagementScreen(
             ) {
                 if (uiState.customPacks.isNotEmpty()) {
                     item {
-                        SectionHeader(title = stringResource(R.string.topics_custom_packs), icon = Icons.Default.Category)
+                        SpigunSectionHeader(title = stringResource(R.string.topics_custom_packs), icon = Icons.Default.Category)
                     }
                     items(uiState.customPacks) { pack ->
                         TopicPackItem(
@@ -145,7 +145,7 @@ fun TopicsManagementScreen(
                 }
 
                 item {
-                    SectionHeader(title = stringResource(R.string.topics_default_packs), icon = Icons.Default.AutoAwesome)
+                    SpigunSectionHeader(title = stringResource(R.string.topics_default_packs), icon = Icons.Default.AutoAwesome)
                 }
 
                 items(uiState.defaultPacks) { pack ->
@@ -194,53 +194,13 @@ fun TopicsManagementScreen(
 }
 
 @Composable
-fun HeaderSection() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = stringResource(R.string.topics_header_title),
-            style = SpigunTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = stringResource(R.string.topics_header_description),
-            color = SpigunTheme.colors.gray,
-            fontWeight = FontWeight.Bold,
-            style = SpigunTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(
-            text = title,
-            style = SpigunTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
 fun TopicPackItem(
     pack: TopicsPack,
     onEdit: (TopicsPack) -> Unit,
     onDelete: (TopicsPack) -> Unit
 ) {
     val view = LocalView.current
-    val shape = RoundedCornerShape(16.dp)
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        shape = shape,
+    SpigunCard(
         colors = CardDefaults.cardColors(
             containerColor = if (pack.isCustom) SpigunTheme.colors.secondaryContainer else SpigunTheme.colors.surfaceVariant
         )
