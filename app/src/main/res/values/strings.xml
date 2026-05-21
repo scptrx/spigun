@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">Spigun</string>
+
+    <string name="home_title">spigun</string>
+    <string name="home_description">show players their role, then let the group find who doesn\'t know the topic.</string>
+    <string name="home_new_game">new game</string>
+    <string name="home_my_groups">my player groups</string>
+    <string name="home_topics">topics</string>
+
+    <string name="players_title">players &amp; groups</string>
+    <string name="players_save_group">save group</string>
+    <string name="players_add_player">add player</string>
+    <string name="players_search_placeholder">search players…</string>
+    <string name="players_saved_groups">saved groups</string>
+    <string name="players_all_players">all players</string>
+    <string name="players_header_title">manage players</string>
+    <string name="players_header_description">select at least 3 players to save them as a group for faster setup.</string>
+
+    <string name="dialog_add_player_title">add new player</string>
+    <string name="dialog_edit_player_title">edit player</string>
+    <string name="dialog_edit_group_title">edit group</string>
+    <string name="dialog_save_group_title">save group</string>
+    <string name="dialog_player_name_label">player name</string>
+    <string name="dialog_group_name_label">group name</string>
+    <string name="dialog_players_in_group_label">players in group:</string>
+    <string name="dialog_group_min_players_error">group must have at least 3 players.</string>
+    <string name="dialog_save_group_hint">name this group. if empty, it will be named by players.</string>
+    <string name="dialog_confirm_add">add</string>
+    <string name="dialog_confirm_save">save</string>
+    <string name="dialog_confirm_cancel">cancel</string>
+    <string name="dialog_confirm_delete">delete</string>
+    <string name="dialog_confirm_ok">ok</string>
+
+    <string name="dialog_delete_player_title">delete player</string>
+    <string name="dialog_delete_player_text">are you sure you want to delete %1$s? they will be removed from all groups.</string>
+    <string name="dialog_delete_group_title">delete group</string>
+    <string name="dialog_delete_group_text">are you sure you want to delete the group \"%1$s\"?</string>
+    <string name="dialog_cannot_delete_player_title">cannot delete player</string>
+    <string name="dialog_cannot_delete_player_text">this player is part of groups that have only 3 players:</string>
+    <string name="dialog_cannot_delete_player_footer">to delete this player, you must first delete these groups or add more players to them.</string>
 </resources>

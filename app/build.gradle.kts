@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -53,14 +54,20 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    
-    // Navigation
+
     implementation(libs.androidx.navigation.compose)
-    
-    // Serialization
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.material.icons.extended)
+
     implementation(libs.kotlinx.serialization.json)
-    
-    // Hilt
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    implementation(libs.datastore.preferences)
+    implementation(libs.datastore.serialization)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

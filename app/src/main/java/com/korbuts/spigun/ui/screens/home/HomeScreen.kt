@@ -1,6 +1,8 @@
 package com.korbuts.spigun.ui.screens.home
 
 import android.content.res.Configuration
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.korbuts.spigun.R
+
+private fun View.vibrate() {
+    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+}
 
 @Composable
 fun HomeScreen(
@@ -31,7 +40,6 @@ fun HomeScreen(
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +58,7 @@ fun HomeScreen(
                     onManageGroups = onManageGroups,
                     onBrowseTopics = onBrowseTopics,
                     modifier = Modifier.weight(1f),
-                    buttonWidthFraction = 1f
+                    buttonWidthFraction = 1f,
                 )
             }
         } else {
@@ -72,7 +80,7 @@ fun HomeScreen(
 private fun Header(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(
-            text = "spigun",
+            text = stringResource(R.string.home_title),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -80,7 +88,7 @@ private fun Header(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "show players their role, then let the group find who doesn't know the topic.",
+            text = stringResource(R.string.home_description),
             color = Color.Gray,
             fontWeight = FontWeight.Bold,
         )
@@ -95,19 +103,23 @@ private fun Buttons(
     modifier: Modifier = Modifier,
     buttonWidthFraction: Float
 ) {
+    val view = LocalView.current
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center
     ) {
         Button(
-            onClick = onStartNewGame,
+            onClick = {
+                view.vibrate()
+                onStartNewGame()
+            },
             modifier = Modifier
                 .fillMaxWidth(buttonWidthFraction)
-                .height(64.dp)
+                .height(64.dp),
         ) {
             Text(
-                text = "new game",
+                text = stringResource(R.string.home_new_game),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
@@ -118,13 +130,16 @@ private fun Buttons(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onManageGroups,
+            onClick = {
+                view.vibrate()
+                onManageGroups()
+            },
             modifier = Modifier
                 .fillMaxWidth(buttonWidthFraction)
                 .height(64.dp)
         ) {
             Text(
-                text = "my player groups",
+                text = stringResource(R.string.home_my_groups),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
@@ -135,13 +150,16 @@ private fun Buttons(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onBrowseTopics,
+            onClick = {
+                view.vibrate()
+                onBrowseTopics()
+            },
             modifier = Modifier
                 .fillMaxWidth(buttonWidthFraction)
                 .height(64.dp)
         ) {
             Text(
-                text = "topics",
+                text = stringResource(R.string.home_topics),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,

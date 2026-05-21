@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.korbuts.spigun.ui.screens.home.HomeScreen
+import com.korbuts.spigun.ui.screens.players.PlayerManagementScreen
 
 @Composable
 fun AppNavigation() {
@@ -24,8 +25,9 @@ fun AppNavigation() {
         }
 
         composable<Screen.PlayerManagement> {
-            // TODO: Implement Player & Group Management
-            Text("Player Management Screen")
+            PlayerManagementScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable<Screen.TopicManagement> {
