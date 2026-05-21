@@ -1,13 +1,11 @@
 package com.korbuts.spigun.ui.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.korbuts.spigun.ui.screens.home.HomeScreen
-import com.korbuts.spigun.ui.screens.groups.GroupsScreen
-import com.korbuts.spigun.ui.screens.groups.AddGroupScreen
 
 @Composable
 fun AppNavigation() {
@@ -19,36 +17,35 @@ fun AppNavigation() {
     ) {
         composable<Screen.Home> {
             HomeScreen(
-                onStartNewGame = { navController.navigate(Screen.Lobby()) },
-                onManageGroups = { navController.navigate(Screen.Groups(id = 0)) },
-                onBrowseTopics = { navController.navigate(Screen.Topics(id = 0)) }
+                onStartNewGame = { navController.navigate(Screen.GameSetup) },
+                onManageGroups = { navController.navigate(Screen.PlayerManagement) },
+                onBrowseTopics = { navController.navigate(Screen.TopicManagement) }
             )
         }
 
-        composable<Screen.Groups> { backStackEntry ->
-            val route: Screen.Groups = backStackEntry.toRoute()
-            GroupsScreen(
-                onAddGroup = { navController.navigate(Screen.AddGroup(id = route.id)) },
-                onSelectGroup = { groupId -> navController.navigate(Screen.Lobby(groupId)) }
-            )
+        composable<Screen.PlayerManagement> {
+            // TODO: Implement Player & Group Management
+            Text("Player Management Screen")
         }
 
-        composable<Screen.AddGroup> {
-            AddGroupScreen(
-                onGroupSaved = { navController.popBackStack() }
-            )
+        composable<Screen.TopicManagement> {
+            // TODO: Implement Topic Pack Browsing
+            Text("Topic Management Screen")
         }
 
-        composable<Screen.Topics> {
-            // TODO: Implement ThemesScreen
+        composable<Screen.GameSetup> {
+            // TODO: Implement Round Configuration
+            Text("Game Setup Screen")
         }
 
-        composable<Screen.Lobby> {
-            // TODO: Implement LobbyScreen
+        composable<Screen.GamePlay> {
+            // TODO: Implement Game Role Reveal & Timer
+            Text("Game Play Screen")
         }
 
-        composable<Screen.Game> {
-            // TODO: Implement GameScreen
+        composable<Screen.Results> {
+            // TODO: Implement Voting & Results
+            Text("Results Screen")
         }
     }
 }

@@ -2,23 +2,22 @@ package com.korbuts.spigun.ui.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-sealed class Screen {
+sealed interface Screen {
     @Serializable
-    object Home : Screen()
+    data object Home : Screen
 
     @Serializable
-    data class Groups(val id: Int) : Screen()
+    data object PlayerManagement : Screen
 
     @Serializable
-    data class AddGroup(val id: Int) : Screen()
+    data object TopicManagement : Screen
 
     @Serializable
-    data class Topics(val id: Int) : Screen()
+    data object GameSetup : Screen
 
     @Serializable
-    data class Lobby(val groupId: Long? = null) : Screen()
+    data object GamePlay : Screen
 
     @Serializable
-    data class Game(val chatId: Long) : Screen()
+    data object Results : Screen
 }
