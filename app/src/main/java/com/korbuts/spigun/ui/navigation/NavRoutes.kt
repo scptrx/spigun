@@ -16,7 +16,10 @@ sealed interface Screen {
     data object GameSetup : Screen
 
     @Serializable
-    data object GamePlay : Screen
+    data object RoleReveal : Screen
+
+    @Serializable
+    data object GameTimer : Screen
 
     @Serializable
     data object Results : Screen

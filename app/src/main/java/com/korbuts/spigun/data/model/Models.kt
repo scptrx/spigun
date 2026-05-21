@@ -34,7 +34,9 @@ data class RoundConfig(
     val roundDurationMinutes: Int = 5,
     val spyCount: Int = 1,
     val activeTopicsPackIds: List<String> = emptyList(),
-    val activePlayerIds: List<String> = emptyList()
+    val selectedGroupId: String? = null,
+    val spyKnowsCategory: Boolean = false,
+    val surpriseGameEnabled: Boolean = false
 ) : Parcelable
 
 enum class PlayerRole {
