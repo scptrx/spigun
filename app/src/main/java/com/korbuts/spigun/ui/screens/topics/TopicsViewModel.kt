@@ -1,8 +1,8 @@
 package com.korbuts.spigun.ui.screens.topics
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.korbuts.spigun.data.model.MockData
 import com.korbuts.spigun.data.model.TopicsPack
 import com.korbuts.spigun.data.repository.GameRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import javax.inject.Inject
 
@@ -24,7 +25,8 @@ data class TopicsUiState(
 
 @HiltViewModel
 class TopicsViewModel @Inject constructor(
-    private val repository: GameRepository
+    private val repository: GameRepository,
+    private val application: Application
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -58,8 +60,12 @@ class TopicsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentPacks = repository.getTopicPacks().first()
             if (currentPacks.isEmpty()) {
-                MockData.defaultTopicPacks.forEach {
-                    repository.saveTopicPack(it)
+                try {
+                    val jsonString = application.assets.open("topics.json").bufferedReader().use { it.readText() }
+                    val defaultPacks = Json.decodeFromString<List<TopicsPack>>(jsonString)
+                    repository.saveTopicPacks(defaultPacks)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

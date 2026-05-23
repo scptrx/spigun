@@ -1,0 +1,65 @@
+[
+  {
+    "id": "places_id",
+    "name": "Places",
+    "words": [
+      "Airport", "Hospital", "School", "Beach", "Paris", "Museum", "Cinema", "Gym", "Library", "Mountain",
+      "Stadium", "Restaurant", "Police Station", "Church", "Bank", "Supermarket", "Pharmacy", "Zoo", "Park", "Harbor"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "food_id",
+    "name": "Food",
+    "words": [
+      "Pizza", "Sushi", "Burger", "Pasta", "Apple", "Ice Cream", "Coffee", "Bread", "Cheese", "Steak",
+      "Chocolate", "Taco", "Salad", "Soup", "Pancake", "Donut", "Honey", "Egg", "Rice", "Banana"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "nature_id",
+    "name": "Nature",
+    "words": [
+      "River", "Forest", "Ocean", "Desert", "Flower", "Tree", "Rain", "Sun", "Lake", "Sky",
+      "Cloud", "Wind", "Snow", "Waterfall", "Canyon", "Island", "Cave", "Thunder", "Star", "Leaf"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "jobs_id",
+    "name": "Jobs",
+    "words": [
+      "Doctor", "Engineer", "Teacher", "Pilot", "Chef", "Artist", "Driver", "Scientist", "Police", "Lawyer",
+      "Astronaut", "Firefighter", "Nurse", "Farmer", "Architect", "Programmer", "Musician", "Photographer", "Dentist", "Soldier"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "animals_id",
+    "name": "Animals",
+    "words": [
+      "Lion", "Elephant", "Tiger", "Dog", "Cat", "Bird", "Fish", "Horse", "Monkey", "Snake",
+      "Giraffe", "Zebra", "Wolf", "Bear", "Eagle", "Shark", "Dolphin", "Spider", "Penguin", "Octopus"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "countries_id",
+    "name": "Countries",
+    "words": [
+      "Slovakia", "USA", "Germany", "Japan", "Brazil", "Australia", "Canada", "Italy", "China", "India",
+      "France", "Spain", "Mexico", "Egypt", "Russia", "Norway", "Greece", "Argentina", "Thailand", "UK"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "games_id",
+    "name": "Games",
+    "words": [
+      "Chess", "Minecraft", "Poker", "Dota", "Fortnite", "Mario", "Sudoku", "Tetris", "Football", "Tennis",
+      "Basketball", "Hockey", "League of Legends", "Counter-Strike", "Zelda", "Monopoly", "Solitaire", "Roulette", "Darts", "Golf"
+    ],
+    "isCustom": false
+  }
+]

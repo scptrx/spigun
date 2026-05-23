@@ -73,6 +73,10 @@ class GameRepository @Inject constructor(
         )
     }
 
+    suspend fun saveTopicPacks(packs: List<TopicsPack>) {
+        packs.forEach { saveTopicPack(it) }
+    }
+
     fun getTopicPacks(): Flow<List<TopicsPack>> = gameDao.getAllTopicPacks().map { entities ->
         entities.map { entity ->
             TopicsPack(
