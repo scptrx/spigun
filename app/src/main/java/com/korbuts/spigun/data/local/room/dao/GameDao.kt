@@ -46,6 +46,9 @@ interface GameDao {
     @Query("SELECT * FROM topic_packs")
     fun getAllTopicPacks(): Flow<List<TopicPackEntity>>
 
+    @Query("DELETE FROM topic_packs WHERE id = :packId")
+    suspend fun deleteTopicPack(packId: String)
+
     @Query("DELETE FROM players WHERE id = :playerId")
     suspend fun deletePlayer(playerId: String)
 

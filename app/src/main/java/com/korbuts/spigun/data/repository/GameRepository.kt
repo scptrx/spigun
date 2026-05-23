@@ -78,10 +78,14 @@ class GameRepository @Inject constructor(
             TopicsPack(
                 id = entity.id,
                 name = entity.name,
-                words = entity.words.split(","),
+                words = entity.words.split(",").filter { it.isNotBlank() },
                 isCustom = entity.isCustom
             )
         }
+    }
+
+    suspend fun deleteTopicPack(packId: String) {
+        gameDao.deleteTopicPack(packId)
     }
 
     val roundConfig: Flow<RoundConfig> = roundConfigDataStore.data

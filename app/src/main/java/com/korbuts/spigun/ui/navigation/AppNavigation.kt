@@ -1,7 +1,6 @@
 package com.korbuts.spigun.ui.navigation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,7 +59,7 @@ fun AppNavigation() {
                     navController.getBackStackEntry<Screen.GameGraph>()
                 }
                 val viewModel: GamePlayViewModel = hiltViewModel(backStackEntry)
-                
+
                 BackHandler {
                     navController.popBackStack<Screen.GameSetup>(inclusive = false)
                 }
@@ -76,7 +75,7 @@ fun AppNavigation() {
                     navController.getBackStackEntry<Screen.GameGraph>()
                 }
                 val viewModel: GamePlayViewModel = hiltViewModel(backStackEntry)
-                
+
                 BackHandler {
                     navController.popBackStack<Screen.GameSetup>(inclusive = false)
                 }
@@ -92,7 +91,7 @@ fun AppNavigation() {
                     navController.getBackStackEntry<Screen.GameGraph>()
                 }
                 val viewModel: GamePlayViewModel = hiltViewModel(backStackEntry)
-                
+
                 BackHandler {
                     navController.popBackStack<Screen.GameSetup>(inclusive = false)
                 }
