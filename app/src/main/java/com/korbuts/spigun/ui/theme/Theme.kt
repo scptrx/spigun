@@ -1,6 +1,5 @@
 package com.korbuts.spigun.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -28,26 +27,31 @@ data class SpigunColors(
     val onSecondaryContainer: Color,
     val primaryContainer: Color,
     val error: Color,
-    val gray: Color = Color.Gray,
+    val gray: Color,
     val success: Color
 )
 
-val LocalSpigunColors = staticCompositionLocalOf {
-    SpigunColors(
-        primary = Color.White,
-        onPrimary = Color.Black,
-        background = Color.Black,
-        onBackground = Color.White,
-        surface = Color.Black,
-        onSurface = Color.White,
-        surfaceVariant = Color(0xFF1E1E1E),
-        onSurfaceVariant = Color.White,
-        secondaryContainer = Color(0xFF333333),
-        onSecondaryContainer = Color.White,
-        primaryContainer = Color(0xFF444444),
-        error = Color(0xFF703D49),
-        success = Color(0xFF62B04F)
-    )
+private val DarkSpigunColors = SpigunColors(
+    primary = SpigunWhite,
+    onPrimary = SpigunBlack,
+    background = SpigunBlack,
+    onBackground = SpigunWhite,
+    surface = SpigunBlack,
+    onSurface = SpigunWhite,
+    surfaceVariant = DarkGrey800,
+    onSurfaceVariant = SpigunWhite,
+    secondaryContainer = DarkGrey700,
+    onSecondaryContainer = SpigunWhite,
+    primaryContainer = DarkGrey600,
+    error = ErrorRed,
+    gray = SpigunGray,
+    success = SuccessGreen
+)
+
+private val LightSpigunColors = DarkSpigunColors.copy()
+
+val LocalSpigunColors = staticCompositionLocalOf<SpigunColors> {
+    error("No SpigunColors provided")
 }
 
 object SpigunTheme {
@@ -60,39 +64,39 @@ object SpigunTheme {
 }
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color.White,
-    onPrimary = Color.Black,
-    secondary = Color.White,
-    onSecondary = Color.Black,
-    tertiary = Color.Gray,
-    background = Color.Black,
-    onBackground = Color.White,
-    surface = Color.Black,
-    onSurface = Color.White,
-    surfaceVariant = Color(0xFF1E1E1E),
-    onSurfaceVariant = Color.White,
-    secondaryContainer = Color(0xFF333333),
-    onSecondaryContainer = Color.White,
-    primaryContainer = Color(0xFF444444),
-    error = Color(0xFFCF6679)
+    primary = SpigunWhite,
+    onPrimary = SpigunBlack,
+    secondary = SpigunWhite,
+    onSecondary = SpigunBlack,
+    tertiary = SpigunGray,
+    background = SpigunBlack,
+    onBackground = SpigunWhite,
+    surface = SpigunBlack,
+    onSurface = SpigunWhite,
+    surfaceVariant = DarkGrey800,
+    onSurfaceVariant = SpigunWhite,
+    secondaryContainer = DarkGrey700,
+    onSecondaryContainer = SpigunWhite,
+    primaryContainer = DarkGrey600,
+    error = ErrorRed
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color.White,
-    onPrimary = Color.Black,
-    secondary = Color.White,
-    onSecondary = Color.Black,
-    tertiary = Color.Gray,
-    background = Color.Black,
-    onBackground = Color.White,
-    surface = Color.Black,
-    onSurface = Color.White,
-    surfaceVariant = Color(0xFF1E1E1E),
-    onSurfaceVariant = Color.White,
-    secondaryContainer = Color(0xFF333333),
-    onSecondaryContainer = Color.White,
-    primaryContainer = Color(0xFF444444),
-    error = Color(0xFFCF6679)
+    primary = SpigunWhite,
+    onPrimary = SpigunBlack,
+    secondary = SpigunWhite,
+    onSecondary = SpigunBlack,
+    tertiary = SpigunGray,
+    background = SpigunBlack,
+    onBackground = SpigunWhite,
+    surface = SpigunBlack,
+    onSurface = SpigunWhite,
+    surfaceVariant = DarkGrey800,
+    onSurfaceVariant = SpigunWhite,
+    secondaryContainer = DarkGrey700,
+    onSecondaryContainer = SpigunWhite,
+    primaryContainer = DarkGrey600,
+    error = ErrorRed
 )
 
 @Composable
@@ -101,39 +105,7 @@ fun SpigunTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        SpigunColors(
-            primary = Color.White,
-            onPrimary = Color.Black,
-            background = Color.Black,
-            onBackground = Color.White,
-            surface = Color.Black,
-            onSurface = Color.White,
-            surfaceVariant = Color(0xFF1E1E1E),
-            onSurfaceVariant = Color.White,
-            secondaryContainer = Color(0xFF333333),
-            onSecondaryContainer = Color.White,
-            primaryContainer = Color(0xFF444444),
-            error = Color(0xFFCF6679),
-            success = Color(0xFF62B04F)
-        )
-    } else {
-        SpigunColors(
-            primary = Color.White,
-            onPrimary = Color.Black,
-            background = Color.Black,
-            onBackground = Color.White,
-            surface = Color.Black,
-            onSurface = Color.White,
-            surfaceVariant = Color(0xFF1E1E1E),
-            onSurfaceVariant = Color.White,
-            secondaryContainer = Color(0xFF333333),
-            onSecondaryContainer = Color.White,
-            primaryContainer = Color(0xFF444444),
-            error = Color(0xFFCF6679),
-            success = Color(0xFF62B04F)
-        )
-    }
+    val spigunColors = if (darkTheme) DarkSpigunColors else LightSpigunColors
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -145,7 +117,7 @@ fun SpigunTheme(
     }
 
     CompositionLocalProvider(
-        LocalSpigunColors provides colors
+        LocalSpigunColors provides spigunColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

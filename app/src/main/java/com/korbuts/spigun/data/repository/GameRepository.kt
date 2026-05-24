@@ -11,7 +11,6 @@ import com.korbuts.spigun.data.model.PlayerGroup
 import com.korbuts.spigun.data.model.RoundConfig
 import com.korbuts.spigun.data.model.TopicsPack
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,12 +29,10 @@ class GameRepository @Inject constructor(
     }
 
     suspend fun saveGroup(group: PlayerGroup) {
-        gameDao.insertGroup(PlayerGroupEntity(group.id, group.name))
-        gameDao.deleteAllPlayersFromGroup(group.id)
-        group.players.forEach { player ->
-            gameDao.insertPlayer(PlayerEntity(player.id, player.name))
-            gameDao.insertGroupPlayerCrossRef(GroupPlayerCrossRef(group.id, player.id))
-        }
+        val groupEntity = PlayerGroupEntity(group.id, group.name)
+        val playerEntities = group.players.map { PlayerEntity(it.id, it.name) }
+        val crossRefs = group.players.map { GroupPlayerCrossRef(group.id, it.id) }
+        gameDao.upsertGroupWithPlayers(groupEntity, playerEntities, crossRefs)
     }
 
     fun getGroups(): Flow<List<PlayerGroup>> = gameDao.getAllGroupsWithPlayers().map { relationList ->
@@ -48,18 +45,16 @@ class GameRepository @Inject constructor(
         }
     }
 
-    suspend fun removePlayerFromGroup(groupId: String, playerId: String) {
-        gameDao.deletePlayerFromGroup(groupId, playerId)
+    suspend fun deletePlayer(playerId: String) {
+        gameDao.deletePlayerWithGroups(playerId)
     }
 
-    suspend fun deletePlayer(playerId: String) {
-        gameDao.deletePlayer(playerId)
-        gameDao.deletePlayerFromAllGroups(playerId)
+    suspend fun deletePlayers(playerIds: List<String>) {
+        gameDao.deletePlayersWithGroups(playerIds)
     }
 
     suspend fun deleteGroup(groupId: String) {
-        gameDao.deleteGroup(groupId)
-        gameDao.deleteAllPlayersFromGroup(groupId)
+        gameDao.deleteGroupWithPlayers(groupId)
     }
 
     suspend fun saveTopicPack(pack: TopicsPack) {
@@ -74,7 +69,15 @@ class GameRepository @Inject constructor(
     }
 
     suspend fun saveTopicPacks(packs: List<TopicsPack>) {
-        packs.forEach { saveTopicPack(it) }
+        val entities = packs.map { pack ->
+            TopicPackEntity(
+                id = pack.id,
+                name = pack.name,
+                words = pack.words.joinToString(","),
+                isCustom = pack.isCustom
+            )
+        }
+        gameDao.insertTopicPacks(entities)
     }
 
     fun getTopicPacks(): Flow<List<TopicsPack>> = gameDao.getAllTopicPacks().map { entities ->

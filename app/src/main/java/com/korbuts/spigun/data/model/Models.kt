@@ -16,7 +16,9 @@ data class Player(
 data class PlayerGroup(
     val id: String,
     val name: String,
-    val players: List<Player>
+    val players: List<Player>,
+    val playerNames: String = players.joinToString(", ") { it.name },
+    val playerCount: Int = players.size
 ) : Parcelable
 
 @Serializable

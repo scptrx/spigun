@@ -2,10 +2,13 @@ package com.korbuts.spigun.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val SpigunWhite = Color.White
+val SpigunBlack = Color.Black
+val SpigunGray = Color.Gray
 
-val Purple40 = Color(0xFFFFFFFF)
-val PurpleGrey40 = Color(0xFF000000)
-val Pink40 = Color(0xFF7D5260)
+val DarkGrey800 = Color(0xFF1E1E1E)
+val DarkGrey700 = Color(0xFF333333)
+val DarkGrey600 = Color(0xFF444444)
+
+val ErrorRed = Color(0xFFB42929)
+val SuccessGreen = Color(0xFF62B04F)

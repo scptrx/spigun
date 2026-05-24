@@ -83,6 +83,16 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun deletePlayers() {
+        val selectedIds = _selectedPlayerIds.value.toList()
+        if (selectedIds.isEmpty()) return
+
+        viewModelScope.launch {
+            repository.deletePlayers(selectedIds)
+            _selectedPlayerIds.value = emptySet()
+        }
+    }
+
     fun getCriticalGroupsForPlayer(playerId: String): List<PlayerGroup> {
         return uiState.value.groups.filter { group ->
             group.players.any { it.id == playerId } && group.players.size <= 3
@@ -111,16 +121,11 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+
     fun editGroup(group: PlayerGroup) {
         if (group.name.isBlank()) return
         viewModelScope.launch {
             repository.saveGroup(group)
-        }
-    }
-
-    fun removePlayerFromGroup(groupId: String, playerId: String) {
-        viewModelScope.launch {
-            repository.removePlayerFromGroup(groupId, playerId)
         }
     }
 

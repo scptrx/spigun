@@ -1,9 +1,6 @@
 package com.korbuts.spigun.ui.screens.topics
 
 import android.os.Parcelable
-import android.view.HapticFeedbackConstants
-import android.view.View
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,28 +12,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -54,7 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.korbuts.spigun.R
 import com.korbuts.spigun.data.model.TopicsPack
+import com.korbuts.spigun.ui.common.SearchBar
+import com.korbuts.spigun.ui.common.SpigunAlertDialog
 import com.korbuts.spigun.ui.common.SpigunCard
+import com.korbuts.spigun.ui.common.SpigunDialogConfirmButton
+import com.korbuts.spigun.ui.common.SpigunDialogDismissButton
+import com.korbuts.spigun.ui.common.SpigunDialogOutlinedTextField
+import com.korbuts.spigun.ui.common.SpigunFloatingButton
 import com.korbuts.spigun.ui.common.SpigunHeader
 import com.korbuts.spigun.ui.common.SpigunSectionHeader
 import com.korbuts.spigun.ui.common.vibrate
@@ -92,16 +85,11 @@ fun TopicsManagementScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
+            SpigunFloatingButton(
+                label = stringResource(R.string.topics_add_pack),
                 onClick = {
-                    view.vibrate()
                     activeDialog = TopicDialog.AddPack
-                },
-                containerColor = SpigunTheme.colors.primary,
-                contentColor = SpigunTheme.colors.onPrimary,
-                shape = RoundedCornerShape(24.dp),
-                icon = { Icon(Icons.Default.Add, contentDescription = null, tint = SpigunTheme.colors.onPrimary) },
-                text = { Text(stringResource(R.string.topics_add_pack), fontWeight = FontWeight.Bold, color = SpigunTheme.colors.onPrimary) }
+                }
             )
         }
     ) { padding ->
@@ -115,16 +103,10 @@ fun TopicsManagementScreen(
                 description = stringResource(R.string.topics_header_description)
             )
 
-            OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = viewModel::onSearchQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text(stringResource(R.string.topics_search_placeholder)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp)
+            SearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = viewModel::onSearchQueryChange,
+                placeholder = stringResource(R.string.topics_search_placeholder)
             )
 
             LazyColumn(
@@ -135,7 +117,7 @@ fun TopicsManagementScreen(
                     item {
                         SpigunSectionHeader(title = stringResource(R.string.topics_custom_packs), icon = Icons.Default.Category)
                     }
-                    items(uiState.customPacks) { pack ->
+                    items(uiState.customPacks, key = { it.id } ) { pack ->
                         TopicPackItem(
                             pack = pack,
                             onEdit = { activeDialog = TopicDialog.EditPack(it) },
@@ -148,7 +130,7 @@ fun TopicsManagementScreen(
                     SpigunSectionHeader(title = stringResource(R.string.topics_default_packs), icon = Icons.Default.AutoAwesome)
                 }
 
-                items(uiState.defaultPacks) { pack ->
+                items(uiState.defaultPacks, key = { it.id } ) { pack ->
                     TopicPackItem(
                         pack = pack,
                         onEdit = { activeDialog = TopicDialog.EditPack(it) },
@@ -248,67 +230,61 @@ fun AddEditTopicPackDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, List<String>) -> Unit
 ) {
-    val view = LocalView.current
     var name by rememberSaveable { mutableStateOf(pack?.name ?: "") }
     var wordsString by rememberSaveable { mutableStateOf(pack?.words?.joinToString(", ") ?: "") }
-    
-    val wordsList = wordsString.split(",").map { it.trim() }.filter { it.isNotBlank() }
 
-    AlertDialog(
+    val wordsList = wordsString.split(",").map { it.trim() }.filter { it.isNotBlank() }
+    val isValid = name.isNotBlank() && wordsList.size >= 5
+    val isEditMode = pack != null
+
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (pack == null) R.string.dialog_add_pack_title else R.string.dialog_edit_pack_title)) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.dialog_pack_name_label)) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = wordsString,
-                    onValueChange = { wordsString = it },
-                    label = { Text(stringResource(R.string.dialog_pack_words_label)) },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
-                )
-                if (wordsList.size < 5 && wordsString.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.dialog_pack_min_words_error),
-                        color = SpigunTheme.colors.error,
-                        style = SpigunTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        },
+        title = stringResource(
+            if (isEditMode) R.string.dialog_edit_pack_title
+            else R.string.dialog_add_pack_title
+        ),
         confirmButton = {
-            Button(
-                onClick = {
-                    if (name.isNotBlank() && wordsList.size >= 5) {
-                        view.vibrate()
-                        onConfirm(name, wordsList)
-                    }
-                },
-                enabled = name.isNotBlank() && wordsList.size >= 5
-            ) {
-                Text(stringResource(if (pack == null) R.string.dialog_confirm_add else R.string.dialog_confirm_save))
-            }
+            SpigunDialogConfirmButton(
+                text = stringResource(
+                    if (isEditMode) R.string.dialog_confirm_save
+                    else R.string.dialog_confirm_add
+                ),
+                onClick = { onConfirm(name, wordsList) },
+                enabled = isValid
+            )
         },
         dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
+            SpigunDialogDismissButton(onDismiss)
+        }
+    ) {
+        Column {
+            SpigunDialogOutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = stringResource(R.string.dialog_pack_name_label),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SpigunDialogOutlinedTextField(
+                value = wordsString,
+                onValueChange = { wordsString = it },
+                label = stringResource(R.string.dialog_pack_words_label),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (wordsList.size < 5 && wordsString.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.dialog_pack_min_words_error),
+                    color = SpigunTheme.colors.error,
+                    style = SpigunTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -317,29 +293,20 @@ fun DeleteTopicConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val view = LocalView.current
-    AlertDialog(
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_delete_pack_title)) },
-        text = { Text(stringResource(R.string.dialog_delete_pack_text, pack.name)) },
+        title = stringResource(R.string.dialog_delete_pack_title),
         confirmButton = {
-            Button(
-                onClick = {
-                    view.vibrate()
-                    onConfirm()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = SpigunTheme.colors.error)
-            ) {
-                Text(stringResource(R.string.dialog_confirm_delete))
-            }
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_delete),
+                onClick = onConfirm,
+                isDestructive = true
+            )
         },
         dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
-            }
+            SpigunDialogDismissButton(onDismiss)
         }
-    )
+    ) {
+        Text(stringResource(R.string.dialog_delete_pack_text, pack.name))
+    }
 }

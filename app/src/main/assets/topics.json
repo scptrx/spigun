@@ -4,7 +4,9 @@
     "name": "Places",
     "words": [
       "Airport", "Hospital", "School", "Beach", "Paris", "Museum", "Cinema", "Gym", "Library", "Mountain",
-      "Stadium", "Restaurant", "Police Station", "Church", "Bank", "Supermarket", "Pharmacy", "Zoo", "Park", "Harbor"
+      "Stadium", "Restaurant", "Police Station", "Church", "Bank", "Supermarket", "Pharmacy", "Zoo", "Park", "Harbor",
+      "Train Station", "Hotel", "Mall", "Cafe", "Bar", "Castle", "Village", "Forest Cabin", "Cruise Ship", "Skyscraper",
+      "Amusement Park", "Water Park", "University", "Theater", "Circus"
     ],
     "isCustom": false
   },
@@ -13,7 +15,9 @@
     "name": "Food",
     "words": [
       "Pizza", "Sushi", "Burger", "Pasta", "Apple", "Ice Cream", "Coffee", "Bread", "Cheese", "Steak",
-      "Chocolate", "Taco", "Salad", "Soup", "Pancake", "Donut", "Honey", "Egg", "Rice", "Banana"
+      "Chocolate", "Taco", "Salad", "Soup", "Pancake", "Donut", "Honey", "Egg", "Rice", "Banana",
+      "Sushi Roll", "Borscht", "Croissant", "Kebab", "Paella", "Curry", "Ramen", "Falafel", "Sashimi", "Lasagna",
+      "Tiramisu", "Cheesecake", "Sushi", "Pelmeni", "Shawarma", "Fondue"
     ],
     "isCustom": false
   },
@@ -22,7 +26,9 @@
     "name": "Nature",
     "words": [
       "River", "Forest", "Ocean", "Desert", "Flower", "Tree", "Rain", "Sun", "Lake", "Sky",
-      "Cloud", "Wind", "Snow", "Waterfall", "Canyon", "Island", "Cave", "Thunder", "Star", "Leaf"
+      "Cloud", "Wind", "Snow", "Waterfall", "Canyon", "Island", "Cave", "Thunder", "Star", "Leaf",
+      "Volcano", "Glacier", "Coral Reef", "Savanna", "Jungle", "Aurora", "Rainbow", "Fog", "Sunset", "Moon",
+      "Mountain Peak", "Tundra", "Mangrove"
     ],
     "isCustom": false
   },
@@ -31,7 +37,9 @@
     "name": "Jobs",
     "words": [
       "Doctor", "Engineer", "Teacher", "Pilot", "Chef", "Artist", "Driver", "Scientist", "Police", "Lawyer",
-      "Astronaut", "Firefighter", "Nurse", "Farmer", "Architect", "Programmer", "Musician", "Photographer", "Dentist", "Soldier"
+      "Astronaut", "Firefighter", "Nurse", "Farmer", "Architect", "Programmer", "Musician", "Photographer", "Dentist", "Soldier",
+      "Detective", "Journalist", "Lawyer", "Judge", "Baker", "Mechanic", "Psychologist", "Veterinarian", "Actor", "Director",
+      "CEO", "Waiter", "Hacker", "Archaeologist"
     ],
     "isCustom": false
   },
@@ -40,7 +48,9 @@
     "name": "Animals",
     "words": [
       "Lion", "Elephant", "Tiger", "Dog", "Cat", "Bird", "Fish", "Horse", "Monkey", "Snake",
-      "Giraffe", "Zebra", "Wolf", "Bear", "Eagle", "Shark", "Dolphin", "Spider", "Penguin", "Octopus"
+      "Giraffe", "Zebra", "Wolf", "Bear", "Eagle", "Shark", "Dolphin", "Spider", "Penguin", "Octopus",
+      "Kangaroo", "Panda", "Koala", "Crocodile", "Turtle", "Flamingo", "Owl", "Fox", "Deer", "Bat",
+      "Whale", "Seal", "Hedgehog", "Hamster"
     ],
     "isCustom": false
   },
@@ -48,8 +58,14 @@
     "id": "countries_id",
     "name": "Countries",
     "words": [
-      "Slovakia", "USA", "Germany", "Japan", "Brazil", "Australia", "Canada", "Italy", "China", "India",
-      "France", "Spain", "Mexico", "Egypt", "Russia", "Norway", "Greece", "Argentina", "Thailand", "UK"
+      "Russia", "Germany", "France", "Italy", "Spain", "United Kingdom", "Ukraine", "Poland", "Romania", "Netherlands",
+      "Belgium", "Greece", "Portugal", "Sweden", "Norway", "Finland", "Denmark", "Switzerland", "Austria", "Czech Republic",
+      "Hungary", "Slovakia", "Bulgaria", "Croatia", "Serbia", "Belarus", "Ireland", "Iceland", "Estonia", "Latvia",
+      "Lithuania", "Slovenia", "Montenegro", "Albania", "Moldova", "Bosnia and Herzegovina", "North Macedonia",
+
+      "USA", "Canada", "Mexico", "Brazil", "Argentina", "Colombia", "Japan", "China", "India", "South Korea",
+      "Australia", "New Zealand", "Egypt", "South Africa", "Turkey", "Israel", "Thailand", "Vietnam", "Indonesia", "Malaysia",
+      "Saudi Arabia", "UAE", "Nigeria", "Kenya", "Chile", "Peru"
     ],
     "isCustom": false
   },
@@ -57,8 +73,64 @@
     "id": "games_id",
     "name": "Games",
     "words": [
-      "Chess", "Minecraft", "Poker", "Dota", "Fortnite", "Mario", "Sudoku", "Tetris", "Football", "Tennis",
-      "Basketball", "Hockey", "League of Legends", "Counter-Strike", "Zelda", "Monopoly", "Solitaire", "Roulette", "Darts", "Golf"
+      "Chess", "Minecraft", "Poker", "Dota 2", "Fortnite", "Mario", "Sudoku", "Tetris", "Football", "Tennis",
+      "Basketball", "Hockey", "League of Legends", "Counter-Strike", "Zelda", "Monopoly", "Solitaire", "Roulette", "Darts", "Golf",
+      "Among Us", "GTA", "The Sims", "Valorant", "PUBG", "FIFA", "Call of Duty", "Cyberpunk", "Witcher", "Elden Ring"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "vehicles_id",
+    "name": "Vehicles",
+    "words": [
+      "Car", "Airplane", "Bicycle", "Motorcycle", "Train", "Ship", "Submarine", "Helicopter", "Truck", "Bus",
+      "Scooter", "Yacht", "Rocket", "Tank", "Tractor", "Ambulance", "Fire Truck", "Police Car", "Formula 1", "Bullet Train"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "movies_id",
+    "name": "Movies & TV",
+    "words": [
+      "Titanic", "Inception", "The Matrix", "Harry Potter", "Lord of the Rings", "Avengers", "Joker", "Breaking Bad",
+      "Game of Thrones", "Stranger Things", "The Mandalorian", "Interstellar", "Forrest Gump", "Gladiator", "Parasite",
+      "La La Land", "Spider-Man", "Batman", "The Office", "Friends"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "music_id",
+    "name": "Music",
+    "words": [
+      "Guitar", "Piano", "Drums", "Violin", "Microphone", "Rock", "Hip-Hop", "Jazz", "Classical", "Pop",
+      "Taylor Swift", "Eminem", "Beethoven", "The Beatles", "Queen", "Concert", "Festival", "Headphones", "Vinyl", "DJ"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "fantasy_id",
+    "name": "Fantasy & Myth",
+    "words": [
+      "Dragon", "Unicorn", "Wizard", "Elf", "Dwarf", "Phoenix", "Vampire", "Werewolf", "Magic Wand", "Castle",
+      "Orc", "Troll", "Mermaid", "Centaur", "Goblin", "Sorcerer", "Enchanted Forest", "Magic Potion", "Griffin", "Kraken"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "technology_id",
+    "name": "Technology",
+    "words": [
+      "Smartphone", "Laptop", "Internet", "Robot", "Artificial Intelligence", "Drone", "Virtual Reality", "Blockchain",
+      "Electric Car", "Satellite", "Quantum Computer", "Neural Network", "Server", "Cloud", "5G", "Augmented Reality"
+    ],
+    "isCustom": false
+  },
+  {
+    "id": "clothing_id",
+    "name": "Clothing",
+    "words": [
+      "Jeans", "T-shirt", "Dress", "Suit", "Sneakers", "Jacket", "Hat", "Scarf", "Gloves", "Boots",
+      "Hoodie", "Skirt", "Tie", "Socks", "Swimsuit", "Kimono", "Sari", "High Heels"
     ],
     "isCustom": false
   }

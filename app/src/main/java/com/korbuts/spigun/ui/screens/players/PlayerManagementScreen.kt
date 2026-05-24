@@ -1,8 +1,7 @@
 package com.korbuts.spigun.ui.screens.players
 
 import android.os.Parcelable
-import android.view.HapticFeedbackConstants
-import android.view.View
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,12 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -27,20 +25,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import com.korbuts.spigun.ui.theme.SpigunTheme
@@ -52,7 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -62,7 +52,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.korbuts.spigun.R
 import com.korbuts.spigun.data.model.Player
 import com.korbuts.spigun.data.model.PlayerGroup
+import com.korbuts.spigun.ui.common.SearchBar
+import com.korbuts.spigun.ui.common.SpigunAlertDialog
 import com.korbuts.spigun.ui.common.SpigunCard
+import com.korbuts.spigun.ui.common.SpigunDialogConfirmButton
+import com.korbuts.spigun.ui.common.SpigunDialogDismissButton
+import com.korbuts.spigun.ui.common.SpigunDialogOutlinedTextField
+import com.korbuts.spigun.ui.common.SpigunFloatingButton
 import com.korbuts.spigun.ui.common.SpigunHeader
 import com.korbuts.spigun.ui.common.SpigunSectionHeader
 import com.korbuts.spigun.ui.common.vibrate
@@ -75,6 +71,8 @@ sealed class PlayerDialog : Parcelable {
     @Parcelize data class EditGroup(val group: PlayerGroup) : PlayerDialog()
     @Parcelize data class DeletePlayer(val player: Player) : PlayerDialog()
     @Parcelize data class DeleteGroup(val group: PlayerGroup) : PlayerDialog()
+    @Parcelize data class MassDeletePlayers(val players: List<Player>) : PlayerDialog()
+
     @Parcelize data class PlayerWarning(val groups: List<PlayerGroup>) : PlayerDialog()
 }
 
@@ -102,8 +100,27 @@ fun PlayerManagementScreen(
                 },
                 actions = {
                     if (uiState.selectedPlayerIds.size >= 3) {
+                        IconButton(
+                            onClick = {
+                                view.vibrate()
+                                val selectedPlayers = uiState.players.filter { it.id in uiState.selectedPlayerIds }
+                                activeDialog = PlayerDialog.MassDeletePlayers(selectedPlayers)
+                            },
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .size(24.dp)
+                                .background(SpigunTheme.colors.error, shape = androidx.compose.foundation.shape.CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete, contentDescription = "Delete",  tint = Color.Black
+                            )
+                        }
+                        Spacer(Modifier.width(16.dp))
+                    }
+
+                    if (uiState.selectedPlayerIds.size >= 3) {
                         Button(
-                            onClick = { 
+                            onClick = {
                                 view.vibrate()
                                 activeDialog = PlayerDialog.CreateGroup
                             },
@@ -116,16 +133,11 @@ fun PlayerManagementScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { 
-                    view.vibrate()
+            SpigunFloatingButton(
+                label = stringResource(R.string.players_add_player),
+                onClick = {
                     activeDialog = PlayerDialog.AddPlayer
-                },
-                containerColor = SpigunTheme.colors.primary,
-                contentColor = SpigunTheme.colors.onPrimary,
-                shape = RoundedCornerShape(24.dp),
-                icon = { Icon(Icons.Default.Add, contentDescription = null, tint = SpigunTheme.colors.onPrimary) },
-                text = { Text(stringResource(R.string.players_add_player), fontWeight = FontWeight.Bold, color = SpigunTheme.colors.onPrimary) }
+                }
             )
         }
     ) { padding ->
@@ -139,16 +151,10 @@ fun PlayerManagementScreen(
                 description = stringResource(R.string.players_header_description)
             )
 
-            OutlinedTextField(
-                value = uiState.searchQuery,
-                onValueChange = viewModel::onSearchQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text(stringResource(R.string.players_search_placeholder)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp)
+            SearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = viewModel::onSearchQueryChange,
+                placeholder = stringResource(R.string.players_search_placeholder)
             )
 
             LazyColumn(
@@ -157,23 +163,29 @@ fun PlayerManagementScreen(
             ) {
                 if (uiState.groups.isNotEmpty()) {
                     item(key = "groups_header") {
-                        SpigunSectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
+                        Column(modifier = Modifier.animateItem()) {
+                            SpigunSectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
+                        }
                     }
                     items(
                         items = uiState.groups,
                         key = { "group_${it.id}" },
                         contentType = { "group" }
                     ) { group ->
-                        GroupItem(
-                            group = group,
-                            onEdit = { activeDialog = PlayerDialog.EditGroup(it) },
-                            onDelete = { activeDialog = PlayerDialog.DeleteGroup(it) }
-                        )
+                        Column(modifier = Modifier.animateItem()) {
+                            GroupItem(
+                                group = group,
+                                onEdit = { activeDialog = PlayerDialog.EditGroup(it) },
+                                onDelete = { activeDialog = PlayerDialog.DeleteGroup(it) }
+                            )
+                        }
                     }
                 }
 
                 item(key = "players_header") {
-                    SpigunSectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
+                    Column(modifier = Modifier.animateItem()) {
+                        SpigunSectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
+                    }
                 }
 
                 items(
@@ -181,20 +193,22 @@ fun PlayerManagementScreen(
                     key = { "player_${it.id}" },
                     contentType = { "player" }
                 ) { player ->
-                    PlayerItem(
-                        player = player,
-                        isSelected = uiState.selectedPlayerIds.contains(player.id),
-                        onToggle = { viewModel.togglePlayerSelection(player.id) },
-                        onEdit = { activeDialog = PlayerDialog.EditPlayer(it) },
-                        onDelete = {
-                            val criticalGroups = viewModel.getCriticalGroupsForPlayer(player.id)
-                            if (criticalGroups.isNotEmpty()) {
-                                activeDialog = PlayerDialog.PlayerWarning(criticalGroups)
-                            } else {
-                                activeDialog = PlayerDialog.DeletePlayer(it)
+                    Column(modifier = Modifier.animateItem()) {
+                        PlayerItem(
+                            player = player,
+                            isSelected = uiState.selectedPlayerIds.contains(player.id),
+                            onToggle = { viewModel.togglePlayerSelection(player.id) },
+                            onEdit = { activeDialog = PlayerDialog.EditPlayer(it) },
+                            onDelete = {
+                                val criticalGroups = viewModel.getCriticalGroupsForPlayer(player.id)
+                                activeDialog = if (criticalGroups.isNotEmpty()) {
+                                    PlayerDialog.PlayerWarning(criticalGroups)
+                                } else {
+                                    PlayerDialog.DeletePlayer(it)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -250,6 +264,16 @@ fun PlayerManagementScreen(
                 }
             )
         }
+        is PlayerDialog.MassDeletePlayers -> {
+            DeleteConfirmationDialog(
+                title = stringResource(R.string.dialog_delete_players_title),
+                text = stringResource(R.string.dialog_delete_players_mass),
+                onDismiss = { activeDialog = null },
+                onConfirm = {
+                    viewModel.deletePlayers()
+                    activeDialog = null
+                })
+        }
         is PlayerDialog.DeleteGroup -> {
             DeleteConfirmationDialog(
                 title = stringResource(R.string.dialog_delete_group_title),
@@ -261,6 +285,7 @@ fun PlayerManagementScreen(
                 }
             )
         }
+
         is PlayerDialog.PlayerWarning -> {
             DeletePlayerWarningDialog(
                 groups = dialog.groups,
@@ -280,11 +305,12 @@ private fun PlayerItem(
     onDelete: (Player) -> Unit
 ) {
     val view = LocalView.current
+    val cardColor = if (isSelected) SpigunTheme.colors.primaryContainer
+    else SpigunTheme.colors.surfaceVariant
+
     SpigunCard(
         onClick = onToggle,
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) SpigunTheme.colors.primaryContainer else SpigunTheme.colors.surfaceVariant
-        )
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
             modifier = Modifier
@@ -326,6 +352,7 @@ private fun GroupItem(
     onDelete: (PlayerGroup) -> Unit
 ) {
     val view = LocalView.current
+
     SpigunCard(
         colors = CardDefaults.cardColors(containerColor = SpigunTheme.colors.secondaryContainer)
     ) {
@@ -343,7 +370,7 @@ private fun GroupItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = group.players.joinToString(", ") { it.name },
+                    text = "${group.playerCount} " + stringResource(R.string.players_count),
                     style = SpigunTheme.typography.bodySmall,
                     color = SpigunTheme.colors.onSecondaryContainer.copy(alpha = 0.7f)
                 )
@@ -365,193 +392,173 @@ private fun GroupItem(
 }
 
 @Composable
-private fun AddPlayerDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
-    val view = LocalView.current
+private fun AddPlayerDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
     var name by rememberSaveable { mutableStateOf("") }
-    AlertDialog(
+
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_add_player_title)) },
-        text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.dialog_player_name_label)) },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+        title = stringResource(R.string.dialog_add_player_title),
+        confirmButton = {
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_add),
+                onClick = { if (name.isNotBlank()) onConfirm(name) },
+                enabled = name.isNotBlank()
             )
         },
-        confirmButton = {
-            Button(onClick = { 
-                if (name.isNotBlank()) {
-                    view.vibrate()
-                    onConfirm(name)
-                }
-            }) {
-                Text(stringResource(R.string.dialog_confirm_add))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
-            }
-        }
-    )
+        dismissButton = { SpigunDialogDismissButton(onDismiss) }
+    ) {
+        SpigunDialogOutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = stringResource(R.string.dialog_player_name_label)
+        )
+    }
 }
 
 @Composable
-private fun EditPlayerDialog(player: Player, onDismiss: () -> Unit, onConfirm: (Player) -> Unit) {
+private fun EditPlayerDialog(
+    player: Player,
+    onDismiss: () -> Unit,
+    onConfirm: (Player) -> Unit) {
     val view = LocalView.current
     var name by rememberSaveable { mutableStateOf(player.name) }
-    AlertDialog(
+
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_edit_player_title)) },
-        text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.dialog_player_name_label)) },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+        title = stringResource(R.string.dialog_edit_player_title),
+        confirmButton = {
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_save),
+                onClick = {
+                    if (name.isNotBlank()) {
+                        view.vibrate()
+                        onConfirm(player.copy(name = name))
+                    }
+                },
+                enabled = name.isNotBlank()
             )
         },
-        confirmButton = {
-            Button(onClick = { 
-                if (name.isNotBlank()) {
-                    view.vibrate()
-                    onConfirm(player.copy(name = name))
-                }
-            }) {
-                Text(stringResource(R.string.dialog_confirm_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
-            }
-        }
-    )
+        dismissButton = { SpigunDialogDismissButton(onDismiss) }
+    ) {
+        SpigunDialogOutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = stringResource(R.string.dialog_player_name_label)
+        )
+    }
 }
 
 @Composable
-private fun EditGroupDialog(group: PlayerGroup, onDismiss: () -> Unit, onConfirm: (PlayerGroup) -> Unit) {
-    val view = LocalView.current
+private fun EditGroupDialog(
+    group: PlayerGroup,
+    onDismiss: () -> Unit,
+    onConfirm: (PlayerGroup) -> Unit
+) {
     var name by rememberSaveable { mutableStateOf(group.name) }
     var players by rememberSaveable { mutableStateOf(group.players) }
-    
-    AlertDialog(
+    val view = LocalView.current
+    val isValid = name.isNotBlank() && players.size >= 3
+
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_edit_group_title)) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.dialog_group_name_label)) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(stringResource(R.string.dialog_players_in_group_label), style = SpigunTheme.typography.labelLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
-                    items(
-                        items = players,
-                        key = { it.id }
-                    ) { player ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(player.name)
-                            IconButton(onClick = { 
-                                view.vibrate()
-                                players = players.filter { it.id != player.id }
-                            }) {
-                                Icon(Icons.Default.Close, contentDescription = "Remove", modifier = Modifier.size(18.dp))
-                            }
+        title = stringResource(R.string.dialog_edit_group_title),
+        confirmButton = {
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_save),
+                onClick = {
+                    onConfirm(group.copy(name = name, players = players))
+                },
+                enabled = isValid
+            )
+        },
+        dismissButton = { SpigunDialogDismissButton(onDismiss) }
+    ) {
+        Column {
+            SpigunDialogOutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = stringResource(R.string.dialog_group_name_label),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.dialog_players_in_group_label),
+                style = SpigunTheme.typography.labelLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
+                items(
+                    items = players,
+                    key = { it.id }
+                ) { player ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(player.name)
+                        IconButton(onClick = {
+                            view.vibrate()
+                            players = players.filter { it.id != player.id }
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Remove", modifier = Modifier.size(18.dp))
                         }
                     }
                 }
-                if (players.size < 3) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.dialog_group_min_players_error),
-                        color = SpigunTheme.colors.error,
-                        style = SpigunTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
             }
-        },
-        confirmButton = {
-            Button(
-                onClick = { 
-                    if (name.isNotBlank() && players.size >= 3) {
-                        view.vibrate()
-                        onConfirm(group.copy(name = name, players = players))
-                    }
-                },
-                enabled = name.isNotBlank() && players.size >= 3
-            ) {
-                Text(stringResource(R.string.dialog_confirm_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
+
+            if (players.size < 3) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.dialog_group_min_players_error),
+                    color = SpigunTheme.colors.error,
+                    style = SpigunTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
-    )
+    }
 }
 
 @Composable
-private fun CreateGroupDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
-    val view = LocalView.current
+private fun CreateGroupDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
     var name by rememberSaveable { mutableStateOf("") }
-    AlertDialog(
+
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_save_group_title)) },
-        text = {
-            Column {
-                Text(stringResource(R.string.dialog_save_group_hint))
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.dialog_group_name_label)) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
-        },
+        title = stringResource(R.string.dialog_save_group_title),
         confirmButton = {
-            Button(onClick = { 
-                view.vibrate()
-                onConfirm(name) 
-            }) {
-                Text(stringResource(R.string.dialog_confirm_save))
-            }
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_save),
+                onClick = { onConfirm(name) },
+                enabled = true
+            )
         },
         dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
-            }
+            SpigunDialogDismissButton(onDismiss)
         }
-    )
+    ) {
+        Column {
+            Text(stringResource(R.string.dialog_save_group_hint))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SpigunDialogOutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = stringResource(R.string.dialog_group_name_label)
+            )
+        }
+    }
 }
 
 @Composable
@@ -561,31 +568,22 @@ private fun DeleteConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val view = LocalView.current
-    AlertDialog(
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { Text(text) },
+        title = title,
         confirmButton = {
-            Button(
-                onClick = {
-                    view.vibrate()
-                    onConfirm()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = SpigunTheme.colors.error)
-            ) {
-                Text(stringResource(R.string.dialog_confirm_delete))
-            }
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_delete),
+                onClick = onConfirm,
+                isDestructive = true
+            )
         },
         dismissButton = {
-            TextButton(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_cancel))
-            }
+            SpigunDialogDismissButton(onDismiss)
         }
-    )
+    ) {
+        Text(text)
+    }
 }
 
 @Composable
@@ -593,28 +591,27 @@ private fun DeletePlayerWarningDialog(
     groups: List<PlayerGroup>,
     onDismiss: () -> Unit
 ) {
-    val view = LocalView.current
-    AlertDialog(
+    SpigunAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_cannot_delete_player_title)) },
-        text = {
-            Column {
-                Text(stringResource(R.string.dialog_cannot_delete_player_text))
-                Spacer(modifier = Modifier.height(8.dp))
-                groups.forEach { group ->
-                    Text("• ${group.name}", fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(R.string.dialog_cannot_delete_player_footer))
-            }
-        },
+        title = stringResource(R.string.dialog_cannot_delete_player_title),
         confirmButton = {
-            Button(onClick = {
-                view.vibrate()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.dialog_confirm_ok))
+            SpigunDialogConfirmButton(
+                text = stringResource(R.string.dialog_confirm_ok),
+                onClick = onDismiss
+            )
+        },
+        dismissButton = { }
+    ) {
+        Column {
+            Text(stringResource(R.string.dialog_cannot_delete_player_text))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            groups.forEach { group ->
+                Text("• ${group.name}", fontWeight = FontWeight.Bold)
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(stringResource(R.string.dialog_cannot_delete_player_footer))
         }
-    )
+    }
 }

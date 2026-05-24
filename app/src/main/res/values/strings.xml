@@ -15,6 +15,7 @@
     <string name="players_all_players">all players</string>
     <string name="players_header_title">manage players</string>
     <string name="players_header_description">select at least 3 players to save them as a group for faster setup.</string>
+    <string name="players_count">players</string>
 
     <string name="dialog_add_player_title">add new player</string>
     <string name="dialog_edit_player_title">edit player</string>
@@ -32,9 +33,11 @@
     <string name="dialog_confirm_ok">ok</string>
 
     <string name="dialog_delete_player_title">delete player</string>
+    <string name="dialog_delete_players_title">delete players</string>
     <string name="dialog_delete_player_text">are you sure you want to delete %1$s? they will be removed from all groups.</string>
     <string name="dialog_delete_group_title">delete group</string>
     <string name="dialog_delete_group_text">are you sure you want to delete the group \"%1$s\"?</string>
+    <string name="dialog_delete_players_mass">are you sure you want to delete selected players?</string>
     <string name="dialog_cannot_delete_player_title">cannot delete player</string>
     <string name="dialog_cannot_delete_player_text">this player is part of groups that have only 3 players:</string>
     <string name="dialog_cannot_delete_player_footer">to delete this player, you must first delete these groups or add more players to them.</string>
@@ -83,7 +86,6 @@
     <string name="game_category_label">category: %1$s</string>
     <string name="game_spy_knows_nothing">you don\'t know the topic…</string>
 
-    <!-- Game Play - Timer -->
     <string name="timer_title">discussion</string>
     <string name="timer_header_title">find the spy</string>
     <string name="timer_header_description">discuss the topic and try to figure out who has no idea what you are talking about.</string>
@@ -93,7 +95,6 @@
     <string name="timer_time_up">time is up!</string>
     <string name="timer_finish_voting">go to voting</string>
 
-    <!-- Game Play - Results -->
     <string name="results_title">voting results</string>
     <string name="results_header_title">who is the spy?</string>
     <string name="results_header_description">select the player the group voted for to see if you were right.</string>
