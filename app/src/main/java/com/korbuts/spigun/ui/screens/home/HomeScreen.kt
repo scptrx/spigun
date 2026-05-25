@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.korbuts.spigun.R
 import com.korbuts.spigun.ui.common.SpigunHeader
+import com.korbuts.spigun.ui.common.onClickSingle
 import com.korbuts.spigun.ui.common.vibrate
 
 @Composable
@@ -34,6 +35,10 @@ fun HomeScreen(
     onManageGroups: () -> Unit,
     onBrowseTopics: () -> Unit
 ) {
+    val startNewGameSingle = onStartNewGame.onClickSingle()
+    val manageGroupsSingle = onManageGroups.onClickSingle()
+    val browseTopicsSingle = onBrowseTopics.onClickSingle()
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     
@@ -51,9 +56,9 @@ fun HomeScreen(
             ) {
                 HomeHeader(modifier = Modifier.weight(1f))
                 HomeButtons(
-                    onStartNewGame = onStartNewGame,
-                    onManageGroups = onManageGroups,
-                    onBrowseTopics = onBrowseTopics,
+                    onStartNewGame = startNewGameSingle,
+                    onManageGroups = manageGroupsSingle,
+                    onBrowseTopics = browseTopicsSingle,
                     modifier = Modifier.weight(1f),
                     buttonWidthFraction = 1f,
                 )
@@ -71,9 +76,9 @@ fun HomeScreen(
                 }
                 item {
                     HomeButtons(
-                        onStartNewGame = onStartNewGame,
-                        onManageGroups = onManageGroups,
-                        onBrowseTopics = onBrowseTopics,
+                        onStartNewGame = startNewGameSingle,
+                        onManageGroups = manageGroupsSingle,
+                        onBrowseTopics = browseTopicsSingle,
                         buttonWidthFraction = 0.6f
                     )
                 }

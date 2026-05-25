@@ -39,6 +39,36 @@ fun View.vibrate(constant: Int = HapticFeedbackConstants.KEYBOARD_TAP) {
 }
 
 @Composable
+fun rememberSingleState(): SingleClickState {
+    return remember { SingleClickState() }
+}
+
+class SingleClickState {
+    private var lastClickTime: Long = 0
+    private val threshold = 500L
+
+    fun canClick(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        return if (currentTime - lastClickTime > threshold) {
+            lastClickTime = currentTime
+            true
+        } else {
+            false
+        }
+    }
+}
+
+@Composable
+fun (() -> Unit).onClickSingle(): () -> Unit {
+    val singleClickState = rememberSingleState()
+    return {
+        if (singleClickState.canClick()) {
+            this()
+        }
+    }
+}
+
+@Composable
 fun SpigunHeader(
     title: String,
     description: String,
@@ -93,12 +123,15 @@ fun SpigunCard(
 ) {
     val view = LocalView.current
     val shape = RoundedCornerShape(cornerRadius)
+    val singleClickState = rememberSingleState()
 
     val clickableModifier = remember(onClick, shape, view) {
         if (onClick != null) {
             Modifier.clip(shape).clickable {
-                view.vibrate()
-                onClick.invoke()
+                if (singleClickState.canClick()) {
+                    view.vibrate()
+                    onClick.invoke()
+                }
             }
         } else {
             Modifier

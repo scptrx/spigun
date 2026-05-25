@@ -19,7 +19,8 @@ data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val groups: List<PlayerGroup> = emptyList(),
     val selectedPlayerIds: Set<String> = emptySet(),
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val isLoading: Boolean = true
 )
 
 @HiltViewModel
@@ -40,7 +41,8 @@ class PlayerViewModel @Inject constructor(
             players = players.filter { it.name.contains(query, ignoreCase = true) },
             groups = groups,
             selectedPlayerIds = selectedIds,
-            searchQuery = query
+            searchQuery = query,
+            isLoading = false
         )
     }.stateIn(
         scope = viewModelScope,

@@ -26,7 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -66,7 +67,7 @@ fun TopicsManagementScreen(
     onBack: () -> Unit,
     viewModel: TopicsViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var activeDialog by rememberSaveable { mutableStateOf<TopicDialog?>(null) }
     val view = LocalView.current
 
@@ -233,7 +234,9 @@ fun AddEditTopicPackDialog(
     var name by rememberSaveable { mutableStateOf(pack?.name ?: "") }
     var wordsString by rememberSaveable { mutableStateOf(pack?.words?.joinToString(", ") ?: "") }
 
-    val wordsList = wordsString.split(",").map { it.trim() }.filter { it.isNotBlank() }
+    val wordsList = remember(wordsString) {
+        wordsString.split(",").map { it.trim() }.filter { it.isNotBlank() }
+    }
     val isValid = name.isNotBlank() && wordsList.size >= 5
     val isEditMode = pack != null
 

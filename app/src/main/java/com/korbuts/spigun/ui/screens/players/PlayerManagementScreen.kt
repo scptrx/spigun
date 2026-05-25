@@ -3,6 +3,7 @@ package com.korbuts.spigun.ui.screens.players
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,13 +36,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import com.korbuts.spigun.ui.theme.SpigunTheme
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.korbuts.spigun.ui.theme.SpigunTheme
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,7 +83,7 @@ fun PlayerManagementScreen(
     onBack: () -> Unit,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var activeDialog by rememberSaveable { mutableStateOf<PlayerDialog?>(null) }
 
     val view = LocalView.current
@@ -141,73 +142,84 @@ fun PlayerManagementScreen(
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            SpigunHeader(
-                title = stringResource(R.string.players_header_title),
-                description = stringResource(R.string.players_header_description)
-            )
-
-            SearchBar(
-                query = uiState.searchQuery,
-                onQueryChange = viewModel::onSearchQueryChange,
-                placeholder = stringResource(R.string.players_search_placeholder)
-            )
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.dp)
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
             ) {
-                if (uiState.groups.isNotEmpty()) {
-                    item(key = "groups_header") {
-                        Column(modifier = Modifier.animateItem()) {
-                            SpigunSectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
+                CircularProgressIndicator(color = SpigunTheme.colors.primary)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                SpigunHeader(
+                    title = stringResource(R.string.players_header_title),
+                    description = stringResource(R.string.players_header_description)
+                )
+
+                SearchBar(
+                    query = uiState.searchQuery,
+                    onQueryChange = viewModel::onSearchQueryChange,
+                    placeholder = stringResource(R.string.players_search_placeholder)
+                )
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    if (uiState.groups.isNotEmpty()) {
+                        item(key = "groups_header") {
+                            Column(modifier = Modifier.animateItem()) {
+                                SpigunSectionHeader(title = stringResource(R.string.players_saved_groups), icon = Icons.Default.Group)
+                            }
+                        }
+                        items(
+                            items = uiState.groups,
+                            key = { "group_${it.id}" },
+                            contentType = { "group" }
+                        ) { group ->
+                            Column(modifier = Modifier.animateItem()) {
+                                GroupItem(
+                                    group = group,
+                                    onEdit = { activeDialog = PlayerDialog.EditGroup(it) },
+                                    onDelete = { activeDialog = PlayerDialog.DeleteGroup(it) }
+                                )
+                            }
                         }
                     }
-                    items(
-                        items = uiState.groups,
-                        key = { "group_${it.id}" },
-                        contentType = { "group" }
-                    ) { group ->
+
+                    item(key = "players_header") {
                         Column(modifier = Modifier.animateItem()) {
-                            GroupItem(
-                                group = group,
-                                onEdit = { activeDialog = PlayerDialog.EditGroup(it) },
-                                onDelete = { activeDialog = PlayerDialog.DeleteGroup(it) }
+                            SpigunSectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
+                        }
+                    }
+
+                    items(
+                        items = uiState.players,
+                        key = { "player_${it.id}" },
+                        contentType = { "player" }
+                    ) { player ->
+                        Column(modifier = Modifier.animateItem()) {
+                            PlayerItem(
+                                player = player,
+                                isSelected = uiState.selectedPlayerIds.contains(player.id),
+                                onToggle = { viewModel.togglePlayerSelection(player.id) },
+                                onEdit = { activeDialog = PlayerDialog.EditPlayer(it) },
+                                onDelete = {
+                                    val criticalGroups = viewModel.getCriticalGroupsForPlayer(player.id)
+                                    activeDialog = if (criticalGroups.isNotEmpty()) {
+                                        PlayerDialog.PlayerWarning(criticalGroups)
+                                    } else {
+                                        PlayerDialog.DeletePlayer(it)
+                                    }
+                                }
                             )
                         }
-                    }
-                }
-
-                item(key = "players_header") {
-                    Column(modifier = Modifier.animateItem()) {
-                        SpigunSectionHeader(title = stringResource(R.string.players_all_players), icon = Icons.Default.Person)
-                    }
-                }
-
-                items(
-                    items = uiState.players,
-                    key = { "player_${it.id}" },
-                    contentType = { "player" }
-                ) { player ->
-                    Column(modifier = Modifier.animateItem()) {
-                        PlayerItem(
-                            player = player,
-                            isSelected = uiState.selectedPlayerIds.contains(player.id),
-                            onToggle = { viewModel.togglePlayerSelection(player.id) },
-                            onEdit = { activeDialog = PlayerDialog.EditPlayer(it) },
-                            onDelete = {
-                                val criticalGroups = viewModel.getCriticalGroupsForPlayer(player.id)
-                                activeDialog = if (criticalGroups.isNotEmpty()) {
-                                    PlayerDialog.PlayerWarning(criticalGroups)
-                                } else {
-                                    PlayerDialog.DeletePlayer(it)
-                                }
-                            }
-                        )
                     }
                 }
             }
